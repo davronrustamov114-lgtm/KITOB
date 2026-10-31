@@ -1,0 +1,762 @@
+ 
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 Book Store</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #f5f3ed;
+  --card: #ffffff;
+  --text: #25251f;
+  --muted: #777;
+  --accent: #a47745;
+  --border: #e7e2d8;
+}
+
+body.dark {
+  --bg: #171817;
+  --card: #242724;
+  --text: #f4f1e9;
+  --muted: #b4b4aa;
+  --accent: #d5ad78;
+  --border: #3a3e39;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  transition: .3s;
+}
+
+header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: bold;
+  color: var(--accent);
+}
+
+nav {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+nav button {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+nav button:hover {
+  color: var(--accent);
+}
+
+.theme {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+main {
+  max-width: 1250px;
+  margin: auto;
+  padding: 30px 5%;
+  min-height: 75vh;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.hero {
+  background: linear-gradient(120deg,#292d27,#72583b);
+  color: white;
+  border-radius: 20px;
+  padding: 65px 35px;
+  margin-bottom: 35px;
+}
+
+.hero h1 {
+  font-size: clamp(30px,5vw,48px);
+  margin-bottom: 15px;
+}
+
+.hero p {
+  color: #eee;
+  max-width: 550px;
+  line-height: 1.7;
+}
+
+.hero button {
+  margin-top: 22px;
+  padding: 13px 24px;
+  background: #d8b486;
+  color: #24221c;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.section-title {
+  margin: 25px 0;
+  font-size: 27px;
+}
+
+.search {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--text);
+  margin-bottom: 25px;
+  font-size: 15px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
+  gap: 22px;
+}
+
+.book {
+  background: var(--card);
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  transition: .25s;
+}
+
+.book:hover {
+  transform: translateY(-5px);
+}
+
+.cover {
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #ded5c5;
+}
+
+.book h3 {
+  margin: 13px 0 7px;
+}
+
+.book p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 7px 0;
+}
+
+.price {
+  color: var(--accent);
+  font-weight: bold;
+  font-size: 18px;
+  margin: 12px 0;
+}
+
+.actions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  flex: 1;
+  padding: 10px 7px;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  background: var(--accent);
+  color: white;
+}
+
+.actions .heart {
+  flex: 0 0 43px;
+  font-size: 18px;
+  background: #eee5d8;
+  color: #a33;
+}
+
+.empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--muted);
+  background: var(--card);
+  border-radius: 15px;
+}
+
+.cart-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 17px;
+  margin: 12px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.general-btn {
+  padding: 11px 20px;
+  background: var(--accent);
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+footer {
+  background: var(--card);
+  color: var(--muted);
+  padding: 25px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+
+/* O'qish oynasi */
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #000b;
+  z-index: 30;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal.show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: var(--card);
+  color: var(--text);
+  max-width: 650px;
+  width: 100%;
+  padding: 30px;
+  border-radius: 15px;
+  line-height: 1.8;
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+}
+
+.close {
+  float: right;
+  cursor: pointer;
+  background: none;
+  color: var(--text);
+  border: none;
+  font-size: 25px;
+}
+
+.read-text {
+  font-family: Georgia,serif;
+  font-size: 17px;
+  margin-top: 20px;
+  white-space: pre-line;
+}
+
+@media(max-width:650px) {
+  header {
+    justify-content: center;
+  }
+
+  nav {
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .hero {
+    padding: 40px 22px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">📚 BOOK STORE</div>
+
+  <nav>
+    <button onclick="showPage('home')">Bosh sahifa</button>
+    <button onclick="showPage('books')">Kitoblar</button>
+    <button onclick="showPage('favorites')">❤️ Sevimlilar</button>
+    <button onclick="showPage('cart')">🛒 Savatcha</button>
+    <button onclick="showPage('about')">Biz haqimizda</button>
+  </nav>
+
+  <button class="theme" onclick="toggleTheme()">🌙 / ☀️</button>
+</header>
+
+<main>
+
+<!-- 1-SAHIFA: BOSH SAHIFA -->
+
+<section id="home" class="page active">
+
+  <div class="hero">
+    <h1>Kitoblar olamiga xush kelibsiz!</h1>
+    <p>
+      2026-yilning eng yangi kitoblarini biz bilan kashf eting.
+      Sevimli kitobingizni toping va mutolaani boshlang.
+    </p>
+    <button onclick="showPage('books')">
+      Kitoblarni ko'rish →
+    </button>
+  </div>
+
+  <h2 class="section-title">🔥 Yangi kitoblar — 2026</h2>
+  <div id="homeBooks" class="grid"></div>
+
+</section>
+
+
+<!-- 2-SAHIFA: KITOBLAR -->
+
+<section id="books" class="page">
+
+  <h1 class="section-title">Barcha kitoblar</h1>
+
+  <input
+    class="search"
+    id="search"
+    placeholder="🔍 Kitob yoki muallifni qidiring..."
+    oninput="renderBooks()"
+  >
+
+  <div id="allBooks" class="grid"></div>
+
+</section>
+
+
+<!-- 3-SAHIFA: SEVIMLILAR -->
+
+<section id="favorites" class="page">
+
+  <h1 class="section-title">❤️ Sevimli kitoblarim</h1>
+
+  <div id="favoriteBooks" class="grid"></div>
+
+</section>
+
+
+<!-- 4-SAHIFA: SAVATCHA -->
+
+<section id="cart" class="page">
+
+  <h1 class="section-title">🛒 Savatcha</h1>
+
+  <div id="cartItems"></div>
+
+  <h2 id="total" style="margin-top:25px"></h2>
+
+  <button class="general-btn" onclick="checkout()">
+    Buyurtma berish
+  </button>
+
+</section>
+
+
+<!-- 5-SAHIFA: BIZ HAQIMIZDA -->
+
+<section id="about" class="page">
+
+  <div class="hero">
+    <h1>Biz haqimizda</h1>
+    <p>
+      BOOK STORE — kitobsevarlar uchun yaratilgan
+      zamonaviy onlayn kitob do'koni.
+    </p>
+  </div>
+
+  <h2 class="section-title">Bizning maqsadimiz</h2>
+
+  <p style="line-height:2;color:var(--muted)">
+    Maqsadimiz — kitoblarni sevuvchi insonlarga
+    yangi asarlarni topish, ular bilan tanishish
+    va sevimli kitoblarini saqlash imkoniyatini berish.
+  </p>
+
+  <h2 class="section-title">Aloqa</h2>
+
+  <p>📧 Email: bookstore@example.com</p>
+  <p style="margin-top:12px">📚 BOOK STORE — 2026</p>
+
+</section>
+
+</main>
+
+<footer>
+  © 2026 BOOK STORE. Barcha huquqlar himoyalangan.
+</footer>
+
+
+<!-- KITOB O'QISH OYNASI -->
+
+<div class="modal" id="reader">
+  <div class="modal-content">
+    <button class="close" onclick="closeReader()">×</button>
+    <h2 id="readerTitle"></h2>
+    <p style="color:var(--muted)">
+      Kitob bilan tanishuv uchun original namuna
+    </p>
+    <div class="read-text" id="readerText"></div>
+    <button class="general-btn" onclick="closeReader()">
+      Yopish
+    </button>
+  </div>
+</div>
+
+
+<script>
+
+// KITOBLAR MA'LUMOTLARI
+
+const books = [
+{
+ id:1,
+ title:"Hollywood, Ending",
+ author:"John Green",
+ year:2026,
+ genre:"Roman",
+ price:85000,
+ image:"https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=500",
+ description:"Ishonch, do'stlik va Gollivud olami haqida roman.",
+ sample:"BIRINCHI SAHIFA — NAMUNA\n\nHar bir yangi kun inson uchun yangi imkoniyat olib keladi. Ba'zan biz hayotimizdagi eng muhim voqealar qayerdan boshlanishini oldindan bilmaymiz.\n\nBu hikoya ham aynan shunday bir kundan boshlanadi."
+},
+{
+ id:2,
+ title:"The French Illusion",
+ author:"John Grisham",
+ year:2026,
+ genre:"Detektiv",
+ price:95000,
+ image:"https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500",
+ description:"Parijdagi sayohat va sirli voqealar haqidagi roman.",
+ sample:"BIRINCHI SAHIFA — NAMUNA\n\nParij tongi odatdagidan sokin edi. Ko'chalar asta-sekin uyg'onar, shaharning har bir burchagida yangi sir yashiringandek tuyulardi.\n\nBu kun hech kim kutmagan voqealarga boy bo'lishi kerak edi."
+},
+{
+ id:3,
+ title:"Hollow Bones",
+ author:"Jodi Picoult",
+ year:2026,
+ genre:"Drama",
+ price:90000,
+ image:"https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=500",
+ description:"Oila, hayot va yaqinlarni himoya qilish haqida roman.",
+ sample:"BIRINCHI SAHIFA — NAMUNA\n\nBa'zi insonlar dunyoni boshqacha ko'radi. Ular har bir kunni yangi savollar bilan qarshi oladi.\n\nHayot esa bizga doimo tanlovlar beradi."
+},
+{
+ id:4,
+ title:"The Isle of Good Karma",
+ author:"Alexander McCall Smith",
+ year:2026,
+ genre:"Sarguzasht",
+ price:78000,
+ image:"https://images.unsplash.com/photo-1513001900722-370f803f498d?w=500",
+ description:"Sayohat, hayot va baxt haqida qiziqarli asar.",
+ sample:"BIRINCHI SAHIFA — NAMUNA\n\nUzoq safarlar ba'zan insonning o'zini qayta kashf etishiga yordam beradi.\n\nHar bir yo'lning o'z hikoyasi, har bir manzilning o'z siri bor."
+},
+{
+ id:5,
+ title:"The Big Cats Dance Party",
+ author:"Alexander McCall Smith",
+ year:2026,
+ genre:"Sarguzasht",
+ price:82000,
+ image:"https://images.unsplash.com/photo-1510172951991-856a654063f9?w=500",
+ description:"Qiziqarli voqealar va sarguzashtlarga boy hikoya.",
+ sample:"BIRINCHI SAHIFA — NAMUNA\n\nKichik bir voqea katta sarguzashtning boshlanishi bo'lishi mumkin.\n\nShaharda hamma narsa odatdagidek edi. Ammo kutilmagan xabar hammasini o'zgartirdi."
+}
+];
+
+
+// MA'LUMOTLARNI SAQLASH
+
+let favorites = JSON.parse(
+ localStorage.getItem("favorites") || "[]"
+);
+
+let cart = JSON.parse(
+ localStorage.getItem("cart") || "[]"
+);
+
+
+// SAHIFANI ALMASHTIRISH
+
+function showPage(page) {
+ document.querySelectorAll(".page").forEach(p => {
+  p.classList.remove("active");
+ });
+
+ document.getElementById(page).classList.add("active");
+
+ if(page==="favorites") renderFavorites();
+ if(page==="cart") renderCart();
+ if(page==="books") renderBooks();
+
+ window.scrollTo(0,0);
+}
+
+
+// TUNGI VA KUNDUZGI REJIM
+
+function toggleTheme() {
+ document.body.classList.toggle("dark");
+
+ localStorage.setItem(
+  "theme",
+  document.body.classList.contains("dark") ? "dark" : "light"
+ );
+}
+
+if(localStorage.getItem("theme")==="dark") {
+ document.body.classList.add("dark");
+}
+
+
+// KITOB KARTASI
+
+function bookCard(book) {
+ const liked = favorites.includes(book.id);
+
+ return `
+ <div class="book">
+
+  <img class="cover"
+   src="${book.image}"
+   alt="${book.title}"
+   onerror="this.src='https://placehold.co/400x500/ddd/333?text=BOOK'"
+  >
+
+  <h3>${book.title}</h3>
+
+  <p>✍️ ${book.author}</p>
+  <p>📅 ${book.year} | ${book.genre}</p>
+
+  <p>${book.description}</p>
+
+  <div class="price">
+   ${book.price.toLocaleString("uz-UZ")} so'm
+  </div>
+
+  <div class="actions">
+
+   <button onclick="readBook(${book.id})">
+    📖 O'qish
+   </button>
+
+   <button class="heart"
+    onclick="toggleFavorite(${book.id})">
+    ${liked ? "❤️" : "🤍"}
+   </button>
+
+   <button onclick="addCart(${book.id})">
+    🛒
+   </button>
+
+  </div>
+
+ </div>
+ `;
+}
+
+
+// BOSH SAHIFA
+
+function renderHome() {
+ document.getElementById("homeBooks").innerHTML =
+ books.slice(0,4).map(bookCard).join("");
+}
+
+
+// BARCHA KITOBLAR
+
+function renderBooks() {
+ const search = document.getElementById("search")
+  .value.toLowerCase();
+
+ const filtered = books.filter(book =>
+  (book.title + " " + book.author + " " + book.genre)
+  .toLowerCase().includes(search)
+ );
+
+ document.getElementById("allBooks").innerHTML =
+ filtered.length
+ ? filtered.map(bookCard).join("")
+ : '<div class="empty">Kitob topilmadi 😔</div>';
+}
+
+
+// SEVIMLILAR
+
+function toggleFavorite(id) {
+
+ if(favorites.includes(id)) {
+  favorites = favorites.filter(x => x !== id);
+ } else {
+  favorites.push(id);
+ }
+
+ localStorage.setItem(
+  "favorites",
+  JSON.stringify(favorites)
+ );
+
+ renderHome();
+ renderBooks();
+ renderFavorites();
+}
+
+function renderFavorites() {
+
+ const list = books.filter(book =>
+  favorites.includes(book.id)
+ );
+
+ document.getElementById("favoriteBooks").innerHTML =
+ list.length
+ ? list.map(bookCard).join("")
+ : '<div class="empty">Hozircha sevimli kitoblar yo‘q ❤️</div>';
+}
+
+
+// KITOB O'QISH
+
+function readBook(id) {
+
+ const book = books.find(x => x.id === id);
+
+ document.getElementById("readerTitle").textContent =
+  book.title;
+
+ document.getElementById("readerText").textContent =
+  book.sample;
+
+ document.getElementById("reader").classList.add("show");
+}
+
+function closeReader() {
+ document.getElementById("reader").classList.remove("show");
+}
+
+
+// SAVATCHAGA QO'SHISH
+
+function addCart(id) {
+ cart.push(id);
+
+ localStorage.setItem("cart",JSON.stringify(cart));
+
+ alert("Kitob savatchaga qo'shildi! 🛒");
+}
+
+
+// SAVATCHA
+
+function renderCart() {
+
+ const list = cart.map(id =>
+  books.find(book => book.id === id)
+ ).filter(Boolean);
+
+ document.getElementById("cartItems").innerHTML =
+ list.length
+ ? list.map((book,index) => `
+   <div class="cart-item">
+    <div>
+     <b>${book.title}</b>
+     <p>${book.price.toLocaleString("uz-UZ")} so'm</p>
+    </div>
+    <button class="general-btn"
+     onclick="removeCart(${index})">
+     O'chirish
+    </button>
+   </div>
+ `).join("")
+ : '<div class="empty">Savatcha hozircha bo‘sh 🛒</div>';
+
+ const total = list.reduce((sum,book) =>
+  sum + book.price,0
+ );
+
+ document.getElementById("total").textContent =
+  "Jami: " + total.toLocaleString("uz-UZ") + " so'm";
+}
+
+
+function removeCart(index) {
+ cart.splice(index,1);
+
+ localStorage.setItem("cart",JSON.stringify(cart));
+
+ renderCart();
+}
+
+
+// BUYURTMA
+
+function checkout() {
+
+ if(cart.length===0) {
+  alert("Avval savatchaga kitob qo'shing!");
+  return;
+ }
+
+ alert("Demo sayt: buyurtma qabul qilish uchun backend va to'lov tizimi ulanishi kerak.");
+
+}
+
+
+// BOSHLANG'ICH ISHGA TUSHIRISH
+
+renderHome();
+renderBooks();
+
+</script>
+
+</body>
+</html>
